@@ -6,32 +6,37 @@
     <title>Image Gallery</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/style.css') }}">
     <style>
-        /* Additional CSS styles */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px; /* Adjust the height as needed */
-            background-color: #333; /* Example background color */
-            color: #fff; /* Example text color */
-            padding: 20px; /* Example padding */
-            z-index: 1000; /* Ensure the header is above other content */
-        }
+    /* Additional CSS styles */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px; /* Adjust the height as needed */
+        background-color: #333; /* Example background color */
+        color: #fff; /* Example text color */
+        padding: 20px; /* Example padding */
+        z-index: 1000; /* Ensure the header is above other content */
+    }
 
-        .gallery-container {
-            padding-top: 100px; /* Adjust the value based on the height of your fixed header */
-        }
-    </style>
+    .gallery-container {
+        padding-top: 100px; /* Adjust the value based on the height of your fixed header */
+    }
+</style>
 </head>
 <body>
 <header>
     <img src="https://media4.giphy.com/headers/levberry/wWIVadS9YYBK.gif" alt="Lofi Browsing GIF" class="header-gif">
     <div class="header-content">
         <h1>WhoJoshi Gallery</h1>
+        <div class="search-box">
+            <input type="text" placeholder="Search..." class="search-input">
+            <!-- Update the button id to match the JavaScript -->
+            <button id="search-button" class="search-button">Search</button>
+        </div>
     </div>
 </header>
-<!-- Horizontal line below the header -->
+
 <div class="header-line"></div>
 
 <div class="gallery-container">
@@ -43,11 +48,13 @@
         {% endfor %}
     </div>
 </div>
+
 <!-- Modal Container -->
 <div id="modal" class="modal">
     <span class="close">&times;</span>
     <img id="modal-image" class="modal-content" src="">
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("modal");
@@ -56,21 +63,20 @@
     let currentImageIndex = 0;
     const galleryItems = document.querySelectorAll(".gallery-item");
     const totalImages = galleryItems.length;
+    const searchButton = document.getElementById("search-button");
+    const searchInput = document.querySelector(".search-input");
+    const galleryContainer = document.querySelector(".gallery");
 
-    // Function to open modal with clicked image
     function openModal(imageUrl) {
         modal.style.display = "block";
         modalImage.src = imageUrl;
         modalImage.style.marginTop = ((window.innerHeight - modalImage.height) / 2) + "px";
     }
 
-
-    // Function to close modal
     function closeModal() {
         modal.style.display = "none";
     }
 
-    // Event listener for image clicks
     galleryItems.forEach((item, index) => {
         item.addEventListener("click", function () {
             currentImageIndex = index;
@@ -79,31 +85,26 @@
         });
     });
 
-    // Event listener for close button click
     closeBtn.addEventListener("click", closeModal);
 
-    // Event listener for clicking outside the modal to close it
     window.addEventListener("click", function (event) {
         if (event.target == modal) {
             closeModal();
         }
     });
 
-    // Function to navigate to the next image
     function nextImage() {
         currentImageIndex = (currentImageIndex + 1) % totalImages;
         const nextImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
         openModal(nextImageUrl);
     }
 
-    // Function to navigate to the previous image
     function prevImage() {
         currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
         const prevImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
         openModal(prevImageUrl);
     }
 
-    // Event listener for arrow key presses
     document.addEventListener("keydown", function (event) {
         if (modal.style.display === "block") {
             if (event.key === "ArrowRight") {
@@ -111,6 +112,38 @@
             } else if (event.key === "ArrowLeft") {
                 prevImage();
             }
+        }
+    });
+
+    searchButton.addEventListener("click", async () => {
+        const url = `/fetch_everything?url=${encodeURIComponent(searchInput.value)}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (response.ok) {
+                galleryContainer.innerHTML = "";
+                data.image_urls.forEach(imageUrl => {
+                    const galleryItem = document.createElement("div");
+                    galleryItem.classList.add("gallery-item");
+                    const image = document.createElement("img");
+                    image.src = imageUrl;
+                    image.alt = "Image";
+                    image.classList.add("gallery-image");
+                    galleryItem.appendChild(image);
+                    galleryContainer.appendChild(galleryItem);
+                });
+                // Add event listener to newly created images
+                galleryContainer.querySelectorAll(".gallery-item").forEach(item => {
+                    item.addEventListener("click", function () {
+                        const imageUrl = this.querySelector("img").src;
+                        openModal(imageUrl);
+                    });
+                });
+            } else {
+                console.error("Error fetching images:", data.detail);
+            }
+        } catch (error) {
+            console.error("Error fetching images:", error);
         }
     });
 });

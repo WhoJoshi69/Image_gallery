@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Request
+import requests
+from fastapi import FastAPI, Request, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from typing import List
+import re
+import json
 from starlette.templating import Jinja2Templates
 
 app = FastAPI()
@@ -9,35 +11,77 @@ app.mount("/static", StaticFiles(directory="frontend"), name="static")
 templates = Jinja2Templates(directory="frontend")
 
 
+# Function to save data to JSON file
+def save_to_json(data, filename):
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+
+# Function to load data from JSON file
+def load_from_json(filename):
+    try:
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/fetch_everything", response_class=HTMLResponse)
+async def generate_gallery(request: Request, url):
+    index = 1
+    page_index = 1
+    main_url = url
+    name = main_url.split("/")[5].replace("%20", " ")
+    print(f"Fetching images of {name}")
+    image_urls = []
+    while True:
+        page_url = f'{main_url}/p{page_index}'
+        response = requests.get(page_url)
+
+        if response.status_code == 200:
+            input_string = response.text
+        else:
+            break
+
+        # Regular expression pattern to match the image URLs
+        pattern = r"showimage\(\'([^']+)'"
+
+        # Find all matches of the pattern in the input string
+        matches = re.findall(pattern, input_string)
+
+        # Base URL for the images
+        base_url = "https://www.cfake.com/medias/photos/"
+
+        # Create the array of image URLs
+        celeb_name = main_url.split("/")[5].replace("_", " ")
+        if celeb_name not in matches[0]:
+            break
+        for match in matches:
+            if celeb_name in match:
+                match = match.replace('big.php?show=', '').split('&')[0]
+                image_urls.append(base_url + match)
+
+        # Increment page index
+        page_index += 1
+
+    # Saving image_urls to storage.json
+    celeb_data = {name: image_urls}
+    save_to_json(celeb_data, "storage.json")
+
+    return templates.TemplateResponse("index.html", {"request": request, "image_urls": image_urls})
+
+
 @app.get("/gallery", response_class=HTMLResponse)
 async def generate_gallery(request: Request):
-    urls = [
-        "https://images3.alphacoders.com/859/thumb-1920-859804.png",
-        "https://letsenhance.io/static/66c1b6abf8f7cf44c19185254d7adb0c/28ebd/AiArtBefore.jpg",
-        "https://images8.alphacoders.com/840/thumb-1920-840020.png",
-        "https://us.123rf.com/450wm/virtosmedia/virtosmedia2302/virtosmedia230216771/198356916-portrait-of-a-sphinx-cat-in-a-royal-suit.jpg?ver=6",
-        "https://img.freepik.com/photos-premium/portrait-du-chat-sphynx-deguise-pharaon-pour-costume-fete-animaux-compagnie-ancienne-egypte_655090-829014.jpg",
-        "https://img.freepik.com/photos-premium/portrait-chat-sphynx-portant-toge-romaine-pour-reconstitution-historique-pet-costume-festif-photo_655090-829009.jpg",
-        "https://deepai.org/static/images/cyberpunkdolphin.png",
-        "https://i.pinimg.com/originals/35/d1/fb/35d1fb5c199f4784bb4a8ed25eb49252.gif",
-        "https://i.pinimg.com/550x/00/a9/10/00a910f0a5229554db7530007467d7ad.jpg",
-        "https://img.freepik.com/photos-premium/portrait-chat-sphynx-portant-toge-romaine-pour-reconstitution-historique-pet-costume-festif-photo_655090-829009.jpg",
-        "https://images3.alphacoders.com/859/thumb-1920-859804.png",
-        "https://letsenhance.io/static/66c1b6abf8f7cf44c19185254d7adb0c/28ebd/AiArtBefore.jpg",
-        "https://images8.alphacoders.com/840/thumb-1920-840020.png",
-        "https://us.123rf.com/450wm/virtosmedia/virtosmedia2302/virtosmedia230216771/198356916-portrait-of-a-sphinx-cat-in-a-royal-suit.jpg?ver=6",
-        "https://img.freepik.com/photos-premium/portrait-du-chat-sphynx-deguise-pharaon-pour-costume-fete-animaux-compagnie-ancienne-egypte_655090-829014.jpg",
-        "https://img.freepik.com/photos-premium/portrait-chat-sphynx-portant-toge-romaine-pour-reconstitution-historique-pet-costume-festif-photo_655090-829009.jpg",
-        "https://deepai.org/static/images/cyberpunkdolphin.png",
-        "https://i.pinimg.com/originals/35/d1/fb/35d1fb5c199f4784bb4a8ed25eb49252.gif",
-        "https://i.pinimg.com/550x/00/a9/10/00a910f0a5229554db7530007467d7ad.jpg",
-        "https://img.freepik.com/photos-premium/portrait-chat-sphynx-portant-toge-romaine-pour-reconstitution-historique-pet-costume-festif-photo_655090-829009.jpg"
-    ]
+    celeb_data = load_from_json("storage.json")
+    urls = []
+    for celeb_name, image_urls in celeb_data.items():
+        urls.extend(image_urls)
 
     return templates.TemplateResponse("index.html", {"request": request, "image_urls": urls})
 
