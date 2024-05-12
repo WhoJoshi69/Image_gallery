@@ -30,12 +30,17 @@
     const modal = document.getElementById("modal");
     const modalImage = document.getElementById("modal-image");
     const closeBtn = document.getElementsByClassName("close")[0];
+    let currentImageIndex = 0;
+    const galleryItems = document.querySelectorAll(".gallery-item");
+    const totalImages = galleryItems.length;
 
     // Function to open modal with clicked image
     function openModal(imageUrl) {
         modal.style.display = "block";
         modalImage.src = imageUrl;
+        modalImage.style.marginTop = ((window.innerHeight - modalImage.height) / 2) + "px";
     }
+
 
     // Function to close modal
     function closeModal() {
@@ -43,9 +48,9 @@
     }
 
     // Event listener for image clicks
-    const galleryItems = document.querySelectorAll(".gallery-item");
-    galleryItems.forEach(item => {
+    galleryItems.forEach((item, index) => {
         item.addEventListener("click", function () {
+            currentImageIndex = index;
             const imageUrl = this.querySelector("img").src;
             openModal(imageUrl);
         });
@@ -58,6 +63,31 @@
     window.addEventListener("click", function (event) {
         if (event.target == modal) {
             closeModal();
+        }
+    });
+
+    // Function to navigate to the next image
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % totalImages;
+        const nextImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
+        openModal(nextImageUrl);
+    }
+
+    // Function to navigate to the previous image
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+        const prevImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
+        openModal(prevImageUrl);
+    }
+
+    // Event listener for arrow key presses
+    document.addEventListener("keydown", function (event) {
+        if (modal.style.display === "block") {
+            if (event.key === "ArrowRight") {
+                nextImage();
+            } else if (event.key === "ArrowLeft") {
+                prevImage();
+            }
         }
     });
 });
