@@ -20,10 +20,10 @@ header {
 }
 
 .header-line {
-    position: relative;
-    left-margin: 0;
-    top: 100px; /* Adjust the distance from the top */
-    width: 100%;
+    position: fixed;
+    margin-left: 0;
+    top: 120px; /* Adjust the distance from the top */
+    width: 2000px;
     height: 50px; /* Adjust the height of the line */
     backdrop-filter: blur(15px); /* Adjust the blur radius as needed */
     pointer-events: none;
