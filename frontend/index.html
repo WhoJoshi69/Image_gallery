@@ -6,23 +6,45 @@
     <title>Image Gallery</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/style.css') }}">
     <style>
-    /* Additional CSS styles */
-    header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 80px; /* Adjust the height as needed */
-        background-color: #333; /* Example background color */
-        color: #fff; /* Example text color */
-        padding: 20px; /* Example padding */
-        z-index: 1000; /* Ensure the header is above other content */
-    }
+        /* Additional CSS styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px; /* Adjust the height as needed */
+            background-color: #333; /* Example background color */
+            color: #fff; /* Example text color */
+            padding: 20px; /* Example padding */
+            z-index: 1000; /* Ensure the header is above other content */
+        }
 
-    .gallery-container {
-        padding-top: 100px; /* Adjust the value based on the height of your fixed header */
-    }
-</style>
+        .gallery-container {
+            padding-top: 100px; /* Adjust the value based on the height of your fixed header */
+        }
+
+        /* Loader styles */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -15px; /* Half of the height */
+            margin-left: -15px; /* Half of the width */
+            z-index: 1001; /* Ensure the loader is above other content */
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -32,7 +54,7 @@
         <div class="search-box">
             <input type="text" placeholder="Search..." class="search-input">
             <!-- Update the button id to match the JavaScript -->
-            <button id="search-button" class="search-button">Search</button>
+            <button id="search-button" class="search-submit">Search</button>
         </div>
     </div>
 </header>
@@ -55,6 +77,9 @@
     <img id="modal-image" class="modal-content" src="">
 </div>
 
+<!-- Loader -->
+<div id="loader" class="loader"></div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("modal");
@@ -66,6 +91,7 @@
     const searchButton = document.getElementById("search-button");
     const searchInput = document.querySelector(".search-input");
     const galleryContainer = document.querySelector(".gallery");
+    const loader = document.getElementById("loader");
 
     function openModal(imageUrl) {
         modal.style.display = "block";
@@ -105,6 +131,13 @@
         openModal(prevImageUrl);
     }
 
+    searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevent default form submission
+            searchButton.click(); // Trigger click event of search button
+        }
+    });
+
     document.addEventListener("keydown", function (event) {
         if (modal.style.display === "block") {
             if (event.key === "ArrowRight") {
@@ -115,7 +148,10 @@
         }
     });
 
-    searchButton.addEventListener("click", async () => {
+    async function fetchImages() {
+        // Show loader
+        loader.style.display = "block";
+
         const url = `/fetch_everything?url=${encodeURIComponent(searchInput.value)}`;
         try {
             const response = await fetch(url);
@@ -144,8 +180,13 @@
             }
         } catch (error) {
             console.error("Error fetching images:", error);
+        } finally {
+            // Hide loader when API call is finished
+            loader.style.display = "none";
         }
-    });
+    }
+
+    searchButton.addEventListener("click", fetchImages);
 });
 
 </script>

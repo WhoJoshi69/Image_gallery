@@ -119,3 +119,37 @@ img {
     font-weight: bold;
     cursor: pointer;
 }
+
+/* Search bar styles */
+.search-bar {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    background-color: #444;
+    color: #fff;
+    font-size: 16px;
+    width: 200px;
+}
+
+.search-submit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #0066ff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Hover effect for submit button */
+.search-submit:hover {
+    background-color: #0052cc;
+}
