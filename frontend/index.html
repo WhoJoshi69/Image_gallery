@@ -74,8 +74,11 @@
 <!-- Modal Container -->
 <div id="modal" class="modal">
     <span class="close">&times;</span>
+    <button id="prev-button" class="nav-button" style="left: 10px;">&#10094;</button>
+    <button id="next-button" class="nav-button" style="right: 10px;">&#10095;</button>
     <img id="modal-image" class="modal-content" src="">
 </div>
+
 
 <!-- Loader -->
 <div id="loader" class="loader"></div>
@@ -85,6 +88,8 @@
     const modal = document.getElementById("modal");
     const modalImage = document.getElementById("modal-image");
     const closeBtn = document.getElementsByClassName("close")[0];
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
     let currentImageIndex = 0;
     const galleryItems = document.querySelectorAll(".gallery-item");
     const totalImages = galleryItems.length;
@@ -146,6 +151,9 @@
             }
         }
     });
+
+    prevButton.addEventListener("click", prevImage);
+    nextButton.addEventListener("click", nextImage);
 
     searchInput.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
