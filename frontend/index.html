@@ -125,7 +125,7 @@
     closeBtn.addEventListener("click", closeModal);
 
     window.addEventListener("click", function(event) {
-        if (event.target == modal) {
+        if (event.target == modal || event.target == modalImage) {
             closeModal();
         }
     });
