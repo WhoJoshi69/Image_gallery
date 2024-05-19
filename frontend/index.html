@@ -81,7 +81,7 @@
 <div id="loader" class="loader"></div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("modal");
     const modalImage = document.getElementById("modal-image");
     const closeBtn = document.getElementsByClassName("close")[0];
@@ -96,7 +96,13 @@
     function openModal(imageUrl) {
         modal.style.display = "block";
         modalImage.src = imageUrl;
-        modalImage.style.marginTop = ((window.innerHeight - modalImage.height) / 2) + "px";
+        modalImage.style.width = "100%";
+        modalImage.style.height = "100%";
+        modalImage.style.objectFit = "contain";
+        modalImage.style.position = "absolute";
+        modalImage.style.top = "50%";
+        modalImage.style.left = "50%";
+        modalImage.style.transform = "translate(-50%, -50%)";
     }
 
     function closeModal() {
@@ -104,7 +110,7 @@
     }
 
     galleryItems.forEach((item, index) => {
-        item.addEventListener("click", function () {
+        item.addEventListener("click", function() {
             currentImageIndex = index;
             const imageUrl = this.querySelector("img").src;
             openModal(imageUrl);
@@ -113,7 +119,7 @@
 
     closeBtn.addEventListener("click", closeModal);
 
-    window.addEventListener("click", function (event) {
+    window.addEventListener("click", function(event) {
         if (event.target == modal) {
             closeModal();
         }
@@ -122,29 +128,29 @@
     function nextImage() {
         currentImageIndex = (currentImageIndex + 1) % totalImages;
         const nextImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
-        openModal(nextImageUrl);
+        modalImage.src = nextImageUrl;
     }
 
     function prevImage() {
         currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
         const prevImageUrl = galleryItems[currentImageIndex].querySelector("img").src;
-        openModal(prevImageUrl);
+        modalImage.src = prevImageUrl;
     }
 
-    searchInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Prevent default form submission
-            searchButton.click(); // Trigger click event of search button
-        }
-    });
-
-    document.addEventListener("keydown", function (event) {
+    document.addEventListener("keydown", function(event) {
         if (modal.style.display === "block") {
             if (event.key === "ArrowRight") {
                 nextImage();
             } else if (event.key === "ArrowLeft") {
                 prevImage();
             }
+        }
+    });
+
+    searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            searchButton.click();
         }
     });
 
@@ -155,7 +161,6 @@
         }
     });
 });
-
 </script>
 </body>
 </html>

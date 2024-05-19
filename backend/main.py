@@ -36,7 +36,6 @@ async def home(request: Request):
 @app.get("/gallery", response_class=HTMLResponse)
 async def generate_gallery(request: Request, url=None):
     try:
-        time.sleep(2)
         index = 1
         page_index = 1
         main_url = url
