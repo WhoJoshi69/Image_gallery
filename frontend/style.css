@@ -1,9 +1,9 @@
-/* CSS styles */
+/* Default styles */
 
 body {
+    font-family: Arial, sans-serif;
     background-color: #1e1e1e;
     color: #fff;
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -13,24 +13,24 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px; /* Adjust the height as needed */
-    background-color: #333; /* Example background color */
-    color: #fff; /* Example text color */
-    padding: 20px; /* Example padding */
-    z-index: 1500; /* Ensure the header is above other content */
+    height: 80px;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    z-index: 1500;
     font-family: Courier;
 }
 
 .header-line {
     position: fixed;
     margin-left: 0;
-    top: 120px; /* Adjust the distance from the top */
-    width: 2000px;
-    height: 50px; /* Adjust the height of the line */
-    backdrop-filter: blur(15px); /* Adjust the blur radius as needed */
+    top: 120px;
+    width: 100%;
+    height: 50px;
+    backdrop-filter: blur(15px);
     pointer-events: none;
-    -webkit-mask-image: linear-gradient(black 25%, transparent); /* Mask for gradient */
-    z-index: 1000; /* Ensure the line is above other content */
+    -webkit-mask-image: linear-gradient(black 25%, transparent);
+    z-index: 1000;
 }
 
 .header-gif {
@@ -40,7 +40,7 @@ header {
     width: 100%;
     height: 100%;
     z-index: -1;
-    filter: blur(2px); /* Adjust the blur radius as needed */
+    filter: blur(2px);
 }
 
 .header-content {
@@ -56,38 +56,35 @@ header h1 {
 }
 
 .gallery {
-    margin-top: 50px; /* Adjust the gap as needed */
+    margin-top: 50px;
     margin-left: 10px;
     margin-right: 10px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
-    justify-content: center; /* Center-align the grid horizontally */
-    align-items: center; /* Center-align the items vertically */
+    justify-content: center;
+    align-items: center;
 }
 
 .gallery-item {
     width: 100%;
-    display: flex; /* Use flexbox for center alignment */
-    justify-content: center; /* Center-align the image horizontally */
-    align-items: center; /* Center-align the image vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 999;
 }
 
 .gallery-container {
-    padding-top: 100px; /* Adjust the value based on the height of your fixed header */
-    z-index: -1; /* Lower z-index to allow images to fall behind */
+    padding-top: 100px;
 }
 
 img {
     max-width: 100%;
-    max-height: 100%; /* Ensure the image fits within the gallery item */
+    max-height: 100%;
     height: auto;
-    width: auto; /* Reset width to maintain aspect ratio */
-    z-index: -1;
+    width: auto;
 }
 
 /* Modal Styles */
@@ -130,7 +127,7 @@ img {
     color: white;
     font-size: 30px;
     cursor: pointer;
-    z-index: 1001; /* Ensure the buttons are above the modal image */
+    z-index: 1001;
     width: 50px;
     height: 50px;
     text-align: center;
@@ -141,7 +138,6 @@ img {
 .nav-button:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
-
 
 /* Search bar styles */
 .search-bar {
@@ -172,11 +168,58 @@ img {
     margin-left: 10px;
 }
 
-/* Hover effect for submit button */
 .search-submit:hover {
     background-color: #0052cc;
 }
 
 .modal-image {
     transition: opacity 0.7s ease-in-out;
+}
+
+/* Media queries for different screen sizes */
+
+@media screen and (max-width: 600px) {
+    header {
+        height: 60px;
+        padding: 10px;
+    }
+
+    .header-line {
+        top: 70px;
+    }
+
+    .header-content {
+        font-size: 16px;
+    }
+
+    .gallery {
+        margin-top: 30px;
+    }
+
+    .gallery-item {
+        border-radius: 6px;
+    }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+    header {
+        height: 70px;
+        padding: 15px;
+    }
+
+    .header-line {
+        top: 90px;
+    }
+
+    .header-content {
+        font-size: 18px;
+    }
+
+    .gallery {
+        margin-top: 40px;
+    }
+
+    .gallery-item {
+        border-radius: 8px;
+    }
 }
